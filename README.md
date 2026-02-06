@@ -35,22 +35,12 @@ Tech Stack
 
 ⦁	Server: Uvicorn
 
-⦁	Database: SQLite
+⦁	Database: Postgresql
 
 ⦁	ORM: SQLAlchemy
 
 ⦁	Validation: Pydantic
 
-Project Structure
-social_backend/
-├── app/
-│   ├── main.py
-│   ├── models.py
-│   ├── schemas.py
-│   ├── crud.py
-│   └── database.py
-├── requirements.txt
-└── README.md
 
 Installation and Setup
 
