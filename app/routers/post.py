@@ -3,7 +3,7 @@ from fastapi import FastAPI,Response,status,HTTPException,Depends,APIRouter
 from sqlalchemy.orm import Session
 from ..database import engine, get_db
 from typing import List,Optional
-from sqlalchemy import func
+from sqlalchemy import func, or_
 router=APIRouter(
     prefix="/posts",
     tags=['posts']
@@ -35,6 +35,43 @@ def create_posts(post: schemas.PostCreate, db: Session= Depends(get_db),current_
     db.commit()
     db.refresh(new_post)
     return new_post
+
+@router.get("/feed", response_model=list[schemas.PostOut])
+def get_feed(
+    db: Session = Depends(get_db),
+    current_user = Depends(oauth2.get_current_user)
+):
+
+    following_users = (
+        db.query(models.Follow.following_id)
+        .filter(
+            models.Follow.follower_id == current_user.id
+        )
+        .subquery()
+    )
+
+    posts = (
+        db.query(
+            models.Post,
+            func.count(models.Vote.post_id).label("votes")
+        )
+        .join(
+            models.Vote,
+            models.Vote.post_id == models.Post.id,
+            isouter=True
+        )
+        .filter(
+            or_(
+                models.Post.owner_id.in_(following_users),
+                models.Post.owner_id == current_user.id
+            )
+        )
+        .group_by(models.Post.id)
+        .order_by(models.Post.created_at.desc())
+        .all()
+    )
+
+    return posts
   
 @router.get("/{id}",response_model=schemas.PostOut)
 def get_post(id: int,db: Session=Depends(get_db),current_user:int=Depends(oauth2.get_current_user)):   
@@ -84,3 +121,4 @@ def update_post(id: int,updated_post:schemas.PostCreate,db: Session=Depends(get_
     
     db.commit()
     return post_query.first()
+

@@ -1,7 +1,7 @@
 from . import models
 from fastapi import FastAPI
 from .database import engine
-from .routers import post, user, auth, vote,comment
+from .routers import post, user, auth, vote,comment,follow
 from .config import settings
 from fastapi.middleware.cors import CORSMiddleware
 # models.Base.metadata.create_all(bind=engine) //alembic can work
@@ -21,7 +21,7 @@ app.include_router(user.router)
 app.include_router(auth.router)
 app.include_router(vote.router)
 app.include_router(comment.router)
-
+app.include_router(follow.router)
 @app.get("/")
 async def root():
     return {"message": "Hello World"}

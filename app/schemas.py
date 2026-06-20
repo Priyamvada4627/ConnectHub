@@ -34,13 +34,6 @@ class PostBase(BaseModel):
 class PostCreate(PostBase):
     pass
 
-class Post(PostBase):
-    id:int
-    created_at: datetime
-    owner_id: int
-    owner: UserOut
-    class Config:
-        orm_mode=True
 
 
 
@@ -56,6 +49,25 @@ class vote(BaseModel):
     dir: Annotated[int, Field(le=1)]
     
 
+class CommentResponse(BaseModel):
+    id: int
+    content: str
+    user_id: int
+
+    class Config:
+        orm_mode = True
+
+    
+class Post(PostBase):
+    id: int
+    created_at: datetime
+    owner_id: int
+    owner: UserOut
+
+    comments: list[CommentResponse] = []
+
+    class Config:
+        orm_mode = True
 
     
 
@@ -82,3 +94,6 @@ class CommentOut(BaseModel):
 
 class CommentUpdate(BaseModel):
     content: str
+
+class FollowCreate(BaseModel):
+    following_id: int
