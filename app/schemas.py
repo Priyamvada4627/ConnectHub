@@ -14,7 +14,7 @@ class UserOut(BaseModel):
     email: EmailStr
     created_at: datetime
     class Config:
-        orm_model=True
+        orm_mode=True
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -40,7 +40,7 @@ class Post(PostBase):
     owner_id: int
     owner: UserOut
     class Config:
-        orm_model=True
+        orm_mode=True
 
 
 
@@ -64,3 +64,21 @@ class PostOut(BaseModel):
     votes:int
     class Config:
         orm_mode=True
+
+
+class CommentCreate(BaseModel):
+    content: str
+
+
+class CommentOut(BaseModel):
+    id: int
+    content: str
+    user_id: int
+    post_id: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+class CommentUpdate(BaseModel):
+    content: str

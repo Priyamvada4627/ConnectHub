@@ -19,16 +19,16 @@ def get_db():
         yield db
     finally:
         db.close()
-
-while True:
-    try:
-        conn=psycopg2.connect(host='localhost',database='fastapi',user='postgres',password='fastapi@123',cursor_factory=RealDictCursor)
-        cursor=conn.cursor()
-        print("Database connection was successfull!")
-        break
-    except Exception as error:
-        print("connecting to database failed")
-        print("error:",error)
-        time.sleep(2)
+# manual postgresql connection retry loop
+# while True:
+#     try:
+#         conn=psycopg2.connect(host='localhost',database='fastapi',user='postgres',password='fastapi@123',cursor_factory=RealDictCursor)
+#         cursor=conn.cursor()
+#         print("Database connection was successfull!")
+#         break
+#     except Exception as error:
+#         print("connecting to database failed")
+#         print("error:",error)
+#         time.sleep(2)
 my_posts=[{"title":"titile of post 1 ","id":1},
           {"title":"faourite food ","content":"i like pizza","id":2}]
