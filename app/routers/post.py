@@ -1,9 +1,11 @@
 from .. import models, schemas,oauth2
-from fastapi import FastAPI,Response,status,HTTPException,Depends,APIRouter
+from fastapi import FastAPI,Response,status,HTTPException,Depends,APIRouter,File, UploadFile, Form
 from sqlalchemy.orm import Session
 from ..database import engine, get_db
 from typing import List,Optional
 from sqlalchemy import func, or_
+
+from ..cloudinary_helper import upload_image
 router=APIRouter(
     prefix="/posts",
     tags=['posts']
@@ -26,11 +28,26 @@ def get_posts(db: Session=Depends(get_db),current_user :int=Depends(oauth2.get_c
 
 @router.post("/",status_code=status.HTTP_201_CREATED,response_model=schemas.Post)
 # def create_posts(payload: dict=Body(...)):
-def create_posts(post: schemas.PostCreate, db: Session= Depends(get_db),current_user:int=Depends(oauth2.get_current_user)):
+def create_posts(
+    title: str = Form(...),
+    content: str = Form(...),
+    published: bool = Form(True),
+    image: UploadFile | None = File(None),
+    db: Session = Depends(get_db),current_user = Depends(oauth2.get_current_user)):
     # cursor.execute("""INSERT INTO posts (title,content,published) VALUES (%s,%s,%s) RETURNING *""",(post.title,post.content,post.published))
     # new_post=cursor.fetchone()
     # conn.commit()
-    new_post=models.Post(owner_id=current_user.id,**post.dict())
+    image_url = None
+
+    if image:
+        image_url = upload_image(
+        image.file)
+    new_post = models.Post(
+    title=title,
+    content=content,
+    published=published,
+    owner_id=current_user.id,
+    image_url=image_url)
     db.add(new_post)
     db.commit()
     db.refresh(new_post)

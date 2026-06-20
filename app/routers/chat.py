@@ -30,9 +30,10 @@ async def websocket_endpoint(
                 continue
 
             new_message = models.Message(
-                sender_id=user_id,
-                receiver_id=receiver_id,
-                content=data["content"]
+            sender_id=user_id,
+            receiver_id=receiver_id,
+            content=data.get("content"),
+            image_url=data.get("image_url")
             )
 
             db.add(new_message)
@@ -46,6 +47,7 @@ async def websocket_endpoint(
                     "sender_id": user_id,
                     "receiver_id": receiver_id,
                     "content": data["content"],
+                    "image_url": new_message.image_url,
                     "created_at": str(new_message.created_at)
                 }
             )

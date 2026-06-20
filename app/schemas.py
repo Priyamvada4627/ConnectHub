@@ -63,7 +63,7 @@ class Post(PostBase):
     created_at: datetime
     owner_id: int
     owner: UserOut
-
+    image_url: str | None = None
     comments: list[CommentResponse] = []
 
     class Config:
@@ -101,6 +101,7 @@ class FollowCreate(BaseModel):
 class MessageCreate(BaseModel):
     receiver_id: int
     content: str
+    image_url: str | None = None
 
 class MessageOut(BaseModel):
     id: int
@@ -108,6 +109,7 @@ class MessageOut(BaseModel):
     receiver_id: int
     content: str
     is_seen: bool
+    image_url: str | None = None
     created_at: datetime
 
     class Config:

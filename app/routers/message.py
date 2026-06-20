@@ -32,9 +32,10 @@ def send_message(
         )
 
     new_message = models.Message(
-        sender_id=current_user.id,
-        receiver_id=message.receiver_id,
-        content=message.content
+    sender_id=current_user.id,
+    receiver_id=message.receiver_id,
+    content=message.content,
+    image_url=message.image_url
     )
 
     db.add(new_message)
