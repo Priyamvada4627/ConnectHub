@@ -25,10 +25,7 @@ class Post(Base):
         back_populates="post",
         cascade="all, delete"
     )
-    comments = relationship(
-    "Comment",
-    back_populates="post"
-    )
+    
 
 class User(Base):
     __tablename__="users"
@@ -83,10 +80,7 @@ class Comment(Base):
         "Post",
         back_populates="comments"
     )
-    post = relationship(
-    "Post",
-    back_populates="comments"
-    )
+    
 
 class Follow(Base):
     __tablename__ = "follows"
@@ -108,3 +102,43 @@ class Follow(Base):
         nullable=False,
         server_default=text('now()')
     )
+
+
+class Message(Base):
+    __tablename__ = "messages"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        nullable=False
+    )
+
+    sender_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    receiver_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    content = Column(
+        String,
+        nullable=False
+    )
+
+    is_seen = Column(
+        Boolean,
+        server_default='FALSE',
+        nullable=False
+    )
+
+    created_at = Column(
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=text('now()')
+    )
+
