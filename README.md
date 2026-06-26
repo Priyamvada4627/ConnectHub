@@ -209,7 +209,6 @@ http://127.0.0.1:8000/redoc
 
 - Docker support
 - CI/CD
-- Unit testing
 - Redis caching
 - Group chat
 - Push notifications
