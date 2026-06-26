@@ -1,142 +1,222 @@
-Social Media Backend API (FastAPI)
+# ConnectHub
 
-A backend REST API built using FastAPI that enables users to communicate through posts and interact with content through likes.
-This project is developed by following a comprehensive FastAPI tutorial and focuses on real-world backend development concepts such as CRUD operations, relational data modeling, and scalable API design.
+A full-stack social networking platform built with FastAPI and PostgreSQL, featuring real-time messaging, voice messages, image sharing, notifications, follows, likes, comments, and live online presence.
 
-The backend forms the foundation of a social media platform where users can create posts, like posts created by other users, and view engagement on posts.
+---
 
-Features
+## Features
 
-1.Create posts for communication
+### Authentication
+- JWT Authentication
+- Secure password hashing with bcrypt
+- User registration and login
 
-2.Retrieve all posts or a specific post
+### Social Features
+- Create, edit and delete posts
+- Like and unlike posts
+- Comment system
+- Follow and unfollow users
+- Personalized feed
+- User profiles
 
-3.Update and delete posts
+### Real-Time Chat
+- One-to-one messaging
+- WebSocket-based communication
+- Typing indicators
+- Read receipts
+- Online/offline presence
+- Image/Audio sharing
 
-4.Like posts created by other users
+### Notifications
+- Follow notifications
+- Like notifications
+- Comment notifications
+- Read/Unread status
 
-5.View which users liked a particular post
+### Media Upload
+- Cloudinary integration
+- Image optimization
+- Voice message uploads
 
-6.View which posts are liked by a user
+---
 
-7.RESTful API design
+## Tech Stack
 
-8.Request and response validation using Pydantic
+### Backend
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- Alembic
+- JWT Authentication
+- WebSockets
 
-9.Automatic API documentation (Swagger UI)
+### Frontend
+- HTML
+- CSS
+- JavaScript
 
-10.Modular and scalable backend structure
+### Cloud
+- Cloudinary
 
-Tech Stack
+---
 
-⦁	Language: Python
+## Architecture
 
-⦁	Framework: FastAPI
+```
+Frontend
+     │
+ REST API / WebSocket
+     │
+FastAPI
+     │
+Routers
+     │
+Service Layer
+     │
+SQLAlchemy ORM
+     │
+PostgreSQL
+```
 
-⦁	Server: Uvicorn
+The backend follows a layered architecture:
 
-⦁	Database: Postgresql
+- Routers handle HTTP requests.
+- Services contain business logic.
+- Models define database entities.
+- Schemas validate request/response data.
 
-⦁	ORM: SQLAlchemy
+---
 
-⦁	Validation: Pydantic
+## Project Structure
 
+```
+app/
+│
+├── routers/
+├── services/
+├── websocket/
+├── models.py
+├── schemas.py
+├── oauth2.py
+├── database.py
+└── main.py
 
-Installation and Setup
+frontend/
+│
+├── css/
+├── js/
+└── *.html
+```
 
-1.Clone the repository
+---
 
-git clone <your-repository-link>
-cd social_backend
+## Database
 
+- PostgreSQL
+- Alembic migrations
+- SQLAlchemy ORM
 
-2.Create and activate virtual environment
+---
 
+## Installation
+
+### Clone
+
+```bash
+git clone <repository-url>
+cd ConnectHub
+```
+
+### Create Virtual Environment
+
+```bash
 python -m venv venv
+```
+
+### Activate
+
+Windows
+
+```bash
+venv\Scripts\activate
+```
+
+Linux/Mac
+
+```bash
 source venv/bin/activate
+```
 
+### Install
 
-(Windows: venv\Scripts\activate)
-
-3.Install dependencies
-
+```bash
 pip install -r requirements.txt
+```
 
+### Configure Environment
 
-4.Run the application
+Create a `.env` file:
 
+```env
+DATABASE_HOSTNAME=
+DATABASE_PORT=
+DATABASE_NAME=
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+
+SECRET_KEY=
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+ALLOWED_ORIGINS=["http://localhost:5500"]
+```
+
+### Apply Migrations
+
+```bash
+alembic upgrade head
+```
+
+### Run
+
+```bash
 uvicorn app.main:app --reload
+```
 
-5.API Documentation
+---
 
-After running the server, open:
+## API Documentation
 
+Swagger UI
+
+```
 http://127.0.0.1:8000/docs
+```
 
+ReDoc
 
-or
-
+```
 http://127.0.0.1:8000/redoc
+```
 
-6.API Endpoints
+---
 
-Posts
+## Future Improvements
 
-GET /posts
-Fetch all posts
+- Docker support
+- CI/CD
+- Unit testing
+- Redis caching
+- Group chat
+- Push notifications
 
-GET /posts/{id}
-Fetch a post by ID
+---
 
-POST /posts
-Create a new post
+## Author
 
-PUT /posts/{id}
-Update an existing post
+**Priyamvada Singh**
 
-DELETE /posts/{id}
-Delete a post
-
-Likes
-
-POST /posts/{id}/like
-Like or unlike a post
-
-GET /posts/{id}/likes
-View all users who liked a post
-
-GET /users/{id}/likes
-View all posts liked by a user
-
-Concepts Learned
-
-1.	FastAPI routing and dependency injection
-
-2.	REST API design principles
-
-3.	Relational database modeling
-
-4.	Many-to-many relationships (posts and users via likes)
-
-5.	CRUD operations with SQLAlchemy
-
-6.	Request validation using Pydantic
-
-7.	Clean backend project structuring
-
-8.	Future Enhancements
-
-9.	User authentication using JWT
-
-10.	Comments system
-
-11.	Follow and unfollow users
-
-12.	PostgreSQL integration
-
-13.	Pagination and filtering
-
-Author
-
-Priyamvada Singh
-Backend Developer | Python | FastAPI
