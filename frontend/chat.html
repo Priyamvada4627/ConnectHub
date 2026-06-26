@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ConnectHub Chat</title>
+
+    <link rel="stylesheet"
+          href="css/chat.css">
+
+</head>
+
+<body>
+
+<div class="chat-layout">
+
+    <!-- =========================
+         Inbox
+    ========================== -->
+
+    <aside class="inbox">
+
+        <div class="inbox-header">
+            <h2>Messages</h2>
+        </div>
+
+        <div id="conversationList">
+
+            <!-- Conversations -->
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         Chat Area
+    ========================== -->
+
+    <main class="chat-window">
+
+        <!-- Header -->
+
+        <div id="chatHeader" class="chat-header">
+
+            Select a conversation
+
+        </div>
+
+
+        <!-- Messages -->
+
+        <div
+            id="messages"
+            class="messages">
+
+        </div>
+
+
+        <!-- Typing Indicator -->
+
+        <div class="typing-status">
+
+            <span id="typingIndicator"></span>
+
+        </div>
+
+
+        <!-- Message Box -->
+
+        <div class="message-box">
+
+            <input
+                id="messageInput"
+                type="text"
+                placeholder="Type a message...">
+
+            <div class="attachments">
+
+                <label class="upload-btn">
+
+                    📷 Image
+
+                    <input
+                        id="imageInput"
+                        type="file"
+                        accept="image/*"
+                        hidden>
+
+                </label>
+
+                <label class="upload-btn">
+
+                    🎤 Audio
+
+                    <input
+                        id="audioInput"
+                        type="file"
+                        accept="audio/*"
+                        hidden>
+
+                </label>
+
+            </div>
+
+            <button
+                id="sendBtn">
+
+                ➤ Send
+
+            </button>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/chat.js"></script>
+
+</body>
+
+</html>

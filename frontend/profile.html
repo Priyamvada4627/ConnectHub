@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile</title>
+
+    <link rel="stylesheet" href="css/profile.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Profile Card -->
+
+    <div class="profile-card">
+
+        <img
+            id="avatar"
+            class="avatar"
+            src="https://placehold.co/150"
+        >
+
+        <h2 id="fullName"></h2>
+
+        <p id="username"></p>
+
+        <p id="bio"></p>
+
+        <div class="stats">
+            <div id="followersCard">
+                <h3 id="followers">0</h3>
+                <span>Followers</span>
+            </div>
+
+            <div id="followingCard">
+                <h3 id="following">0</h3>
+                <span>Following</span>
+            </div>
+
+            <div>
+                <h3 id="postsCount">0</h3>
+                <span>Posts</span>
+            </div>
+
+        </div>
+
+        <button id="editBtn">
+
+            Edit Profile
+
+        </button>
+
+        <button id="followBtn" style="display:none;">
+            Follow
+        </button>
+
+    </div>
+
+    <!-- Edit Profile -->
+
+    <div
+        id="editSection"
+        class="edit-card hidden"
+    >
+
+        <h3>Edit Profile</h3>
+
+        <input
+            id="editName"
+            type="text"
+            placeholder="Full Name"
+        >
+
+        <textarea
+            id="editBio"
+            placeholder="Bio"
+        ></textarea>
+
+        <input
+            id="editAvatar"
+            type="file"
+            accept="image/*"
+        >
+
+        <button id="saveBtn">
+
+            Save Changes
+
+        </button>
+
+    </div>
+
+    <!-- Posts -->
+
+    <div class="posts-section">
+
+        <h2>My Posts</h2>
+
+        <div id="posts">
+
+        </div>
+
+    </div>
+
+    <div id="userModal" class="modal hidden">
+
+        <div class="modal-content">
+
+            <span id="closeModal">&times;</span>
+
+            <h2 id="modalTitle"></h2>
+
+            <div id="userList"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/profile.js"></script>
+
+</body>
+</html>

@@ -1,3 +1,22 @@
-__pycache__
+# Virtual Environment
 venv/
+
+# Environment Variables
 .env
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# Tests (only if you don't plan to include them)
+tests/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db

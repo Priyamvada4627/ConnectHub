@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ConnectHub</title>
+
+    <link rel="stylesheet"
+          href="css/feed.css">
+
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <h2>ConnectHub</h2>
+
+        <nav>
+       
+            <a href="feed.html">🏠 Home</a>
+
+            <a href="profile.html">👤 Profile</a>
+
+            <a href="chat.html">💬 Messages</a>
+
+            <a href="notifications.html">🔔 Notifications</a>
+            <a href="search.html">🔍 Search</a>
+
+            <button id="logoutBtn">
+                Logout
+            </button>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- Main Feed -->
+
+    <main class="feed">
+        <div class="create-post">
+
+    <h2>Create Post</h2>
+
+    <input
+        type="text"
+        id="title"
+        placeholder="Post title">
+
+    <textarea
+        id="content"
+        placeholder="What's on your mind?"></textarea>
+
+    <input
+        type="file"
+        id="image"
+        accept="image/*">
+
+    <button id="postBtn">
+        Create Post
+    </button>
+
+</div>
+
+<div id="posts"></div>
+
+        
+
+    
+
+    </main>
+
+
+    <!-- Right Sidebar -->
+
+    <aside class="right-sidebar">
+
+        <h3>Profile</h3>
+
+        <div id="currentUser"></div>
+
+    </aside>
+
+</div>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/feed.js"></script>
+
+</body>
+
+</html>

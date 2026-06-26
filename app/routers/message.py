@@ -1,78 +1,100 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Query, status,UploadFile, File, Form
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_
-
-from .. import models, schemas, oauth2
+from typing import Annotated
+from .. import schemas, models, oauth2
 from ..database import get_db
-
+from ..services import message_service
+from ..websocket.manager import manager
 router = APIRouter(
     prefix="/messages",
-    tags=["Messages"]
+    tags=["Messages"],
 )
 
+
+# =========================================================
+# SEND MESSAGE
+# =========================================================
 @router.post(
     "/",
     response_model=schemas.MessageOut,
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
 )
 def send_message(
-    message: schemas.MessageCreate,
+    receiver_id: int = Form(...),
+    content: str | None = Form(None),
+
+    image: Annotated[UploadFile | None, File()] = None,
+    audio: Annotated[UploadFile | None, File()] = None,
     db: Session = Depends(get_db),
-    current_user = Depends(oauth2.get_current_user)
+    current_user: models.User = Depends(oauth2.get_current_user),
 ):
 
-    receiver = db.query(models.User).filter(
-        models.User.id == message.receiver_id
-    ).first()
-
-    if not receiver:
-        raise HTTPException(
-            status_code=404,
-            detail="Receiver not found"
-        )
-
-    new_message = models.Message(
-    sender_id=current_user.id,
-    receiver_id=message.receiver_id,
-    content=message.content,
-    image_url=message.image_url
+    return message_service.send_message(
+        receiver_id=receiver_id,
+        content=content,
+        image=image,
+        audio=audio,
+        current_user=current_user,
+        db=db,
     )
-
-    db.add(new_message)
-    db.commit()
-    db.refresh(new_message)
-
-    return new_message
-
+# =========================================================
+# GET CONVERSATION
+# =========================================================
 @router.get(
     "/{user_id}",
-    response_model=list[schemas.MessageOut]
+    response_model=list[schemas.MessageOut],
 )
-def get_conversation(
+async def get_conversation(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user = Depends(oauth2.get_current_user)
+    current_user: models.User = Depends(oauth2.get_current_user),
+    limit: int = Query(50, ge=1, le=200),
+    skip: int = Query(0, ge=0),
 ):
-    db.query(models.Message).filter(
-    models.Message.sender_id == user_id,
-    models.Message.receiver_id == current_user.id,
-    models.Message.is_seen == False).update({"is_seen": True},synchronize_session=False)
 
-    db.commit()
+    # Mark messages as seen
+    seen_messages = message_service.mark_conversation_seen(
+        sender_id=user_id,
+        receiver_id=current_user.id,
+        db=db,
+    )
 
-    messages = db.query(models.Message).filter(
-        or_(
-            and_(
-                models.Message.sender_id == current_user.id,
-                models.Message.receiver_id == user_id
-            ),
-            and_(
-                models.Message.sender_id == user_id,
-                models.Message.receiver_id == current_user.id
-            )
+    # Notify sender
+    for message in seen_messages:
+
+        await manager.send_personal_message(
+            message.sender_id,
+            {
+                "type": "seen",
+                "message_id": message.id,
+            },
         )
-    ).order_by(
-        models.Message.created_at
-    ).all()
+
+    # Fetch conversation
+    messages = message_service.get_conversation(
+        user_id=user_id,
+        current_user=current_user,
+        db=db,
+        limit=limit,
+        skip=skip,
+    )
 
     return messages
+
+# =========================================================
+# GET INBOX
+# =========================================================
+
+@router.get(
+    "/",
+    response_model=list[schemas.InboxConversation],
+)
+def get_inbox(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user),
+):
+
+    return message_service.get_inbox(
+        current_user=current_user,
+        db=db,
+    )
