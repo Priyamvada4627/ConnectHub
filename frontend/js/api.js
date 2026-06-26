@@ -12,7 +12,7 @@ function sanitize(str) {
 const IS_LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 const BASE_URL = IS_LOCAL
     ? "http://127.0.0.1:8000"
-    : "https://connecthub-lyyq.onrender.com/"; 
+    : "https://connecthub-lyyq.onrender.com"; 
 
 async function apiRequest(
     endpoint,
