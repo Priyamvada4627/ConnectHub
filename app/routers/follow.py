@@ -62,8 +62,8 @@ def follow_user(
     # Don't notify yourself
     if user_followed.id != current_user.id:
         notification_service.create_notification(
-            recipient_id=user_followed,
-            actor_id=current_user,
+            recipient_id=user_followed.id,
+            actor_id=current_user.id,
             notification_type="FOLLOW",
             db=db,
         )

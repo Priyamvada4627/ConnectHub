@@ -144,14 +144,10 @@ def mark_all_read(
         .all()
     )
 
-    print("Unread:", len(notifications))
-
     for notification in notifications:
         notification.is_read = True
 
     db.commit()
-
-    print("Done")
 # =========================================================
 # DELETE NOTIFICATION
 # =========================================================

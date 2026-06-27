@@ -52,7 +52,8 @@ class ConnectionHub:
         receiver_id: int,
         data: dict,
     ):
-        websocket = self.active_connections.get(receiver_id)
+        async with self._lock:
+            websocket = self.active_connections.get(receiver_id)
 
         if websocket:
 

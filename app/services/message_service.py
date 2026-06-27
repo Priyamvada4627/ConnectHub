@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status,UploadFile
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, desc
+from sqlalchemy import and_, or_, desc, func
 
 from .. import models, schemas
 from . import notification_service
@@ -191,7 +191,9 @@ def get_conversation(
             detail="User not found",
         )
 
-    return (
+    # Fetch newest messages first (skip/limit on most recent),
+    # then reverse so the response is chronological (oldest → newest).
+    messages = (
         db.query(models.Message)
         .filter(
             or_(
@@ -205,11 +207,14 @@ def get_conversation(
                 ),
             )
         )
-        .order_by(models.Message.created_at)
+        .order_by(models.Message.created_at.desc())
         .limit(limit)
         .offset(skip)
         .all()
     )
+
+    # Return in chronological order for the frontend
+    return list(reversed(messages))
 # =========================================================
 # INBOX
 # =========================================================
@@ -220,66 +225,90 @@ def get_inbox(
 ):
     """
     Returns the latest message from every conversation.
+    Uses a single query + one subquery for unread counts — no N+1.
     """
+    uid = current_user.id
 
+    # Subquery: unread count per sender (messages sent TO current user, unseen)
+    unread_sq = (
+        db.query(
+            models.Message.sender_id.label("other_id"),
+            func.count(models.Message.id).label("unread_count"),
+        )
+        .filter(
+            models.Message.receiver_id == uid,
+            models.Message.is_seen == False,
+        )
+        .group_by(models.Message.sender_id)
+        .subquery()
+    )
+
+    # All messages involving the current user, newest first
     messages = (
         db.query(models.Message)
         .filter(
             or_(
-                models.Message.sender_id == current_user.id,
-                models.Message.receiver_id == current_user.id,
+                models.Message.sender_id == uid,
+                models.Message.receiver_id == uid,
             )
         )
         .order_by(desc(models.Message.created_at))
         .all()
     )
 
-    inbox = []
-    visited = set()
+    # Build inbox in Python — one pass, no extra queries
+    visited: dict[int, dict] = {}
 
     for message in messages:
-
-        other_user_id = (
-            message.receiver_id
-            if message.sender_id == current_user.id
-            else message.sender_id
+        other_id = (
+            message.receiver_id if message.sender_id == uid else message.sender_id
         )
+        if other_id in visited:
+            continue
+        visited[other_id] = message
 
-        if other_user_id in visited:
+    if not visited:
+        return []
+
+    # Fetch all other users in one query
+    other_users = (
+        db.query(models.User)
+        .filter(models.User.id.in_(visited.keys()))
+        .all()
+    )
+    user_map = {u.id: u for u in other_users}
+
+    # Fetch unread counts in one query
+    unread_rows = (
+        db.query(unread_sq.c.other_id, unread_sq.c.unread_count)
+        .all()
+    )
+    unread_map = {row.other_id: row.unread_count for row in unread_rows}
+
+    # Assemble inbox — preserve order (newest conversation first)
+    inbox = []
+    for other_id, message in visited.items():
+        other_user = user_map.get(other_id)
+        if not other_user:
             continue
 
-        visited.add(other_user_id)
-
-        other_user = (
-            db.query(models.User)
-            .filter(models.User.id == other_user_id)
-            .first()
-        )
-
-        unread = (
-            db.query(models.Message)
-            .filter(
-                models.Message.sender_id == other_user_id,
-                models.Message.receiver_id == current_user.id,
-                models.Message.is_seen == False,
-            )
-            .count()
-        )
+        if message.audio_url:
+            last_message_text = None
+            last_message_type = "audio"
+        elif message.image_url:
+            last_message_text = None
+            last_message_type = "image"
+        else:
+            last_message_text = message.content
+            last_message_type = "text"
 
         inbox.append(
             {
                 "user": other_user,
-                "last_message": (
-                    "🎤 Voice Message"
-                    if message.audio_url
-                    else (
-                        "🖼️ Image"
-                        if message.image_url
-                        else message.content
-                    )
-                ),
+                "last_message": last_message_text,
+                "last_message_type": last_message_type,
                 "last_message_time": message.created_at,
-                "unread_count": unread,
+                "unread_count": unread_map.get(other_id, 0),
             }
         )
 

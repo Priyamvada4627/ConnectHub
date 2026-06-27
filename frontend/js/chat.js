@@ -57,7 +57,7 @@ function connectSocket() {
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsHost = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? '127.0.0.1:8000'
-        : "https://connecthub-lyyq.onrender.com"; 
+        : 'connecthub-lyyq.onrender.com';
 
     socket = new WebSocket(
         `${wsProtocol}//${wsHost}/ws/${currentUser.id}?token=${token}`
@@ -131,7 +131,11 @@ async function loadInbox() {
 
             <small>
 
-                ${sanitize(chat.last_message)}
+                ${chat.last_message_type === 'audio'
+                    ? '🎤 Voice message'
+                    : chat.last_message_type === 'image'
+                    ? '🖼️ Image'
+                    : sanitize(chat.last_message ?? '')}
 
             </small>
 

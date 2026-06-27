@@ -43,8 +43,6 @@ async def websocket_endpoint(
     await manager.connect(user_id, websocket)
     await manager.broadcast_online_status(user_id, True)
 
-    db = SessionLocal()
-
     try:
 
         while True:
@@ -97,8 +95,8 @@ async def websocket_endpoint(
 
             if message_type == "seen":
 
+                db = SessionLocal()
                 try:
-
                     message = message_service.mark_message_seen(
                         message_id=data.get("message_id"),
                         current_user_id=user_id,
@@ -122,6 +120,9 @@ async def websocket_endpoint(
                         }
                     )
 
+                finally:
+                    db.close()
+
                 continue
 
             # ==========================================
@@ -144,8 +145,8 @@ async def websocket_endpoint(
 
                 continue
 
+            db = SessionLocal()
             try:
-
                 new_message = message_service.create_message(
                     sender_id=user_id,
                     receiver_id=receiver_id,
@@ -166,6 +167,9 @@ async def websocket_endpoint(
 
                 continue
 
+            finally:
+                db.close()
+
             payload = {
                 "type": "message",
                 "id": new_message.id,
@@ -178,9 +182,9 @@ async def websocket_endpoint(
                 "created_at": str(new_message.created_at),
             }
 
-            await manager.send_personal_message(user_id,payload)
+            await manager.send_personal_message(user_id, payload)
 
-            await manager.send_personal_message(receiver_id,payload)
+            await manager.send_personal_message(receiver_id, payload)
 
     except WebSocketDisconnect:
 
@@ -190,9 +194,6 @@ async def websocket_endpoint(
             user_id,
             False,
         )
-
-    finally:
-        db.close()
 
 @router.get("/online-users", tags=["Chat"])
 def get_online_users():

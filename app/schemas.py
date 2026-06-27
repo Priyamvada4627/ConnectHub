@@ -350,6 +350,9 @@ class InboxConversation(BaseModel):
 
     last_message: Optional[str] = None
 
+    # "text" | "image" | "audio" — lets the frontend decide how to render
+    last_message_type: str = "text"
+
     last_message_time: datetime
 
     unread_count: int
